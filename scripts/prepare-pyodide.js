@@ -13,6 +13,7 @@ const packages = [
 	'tiktoken',
 	'seaborn',
 	'pytz'
+	'pydantic'
 ];
 
 import { loadPyodide } from 'pyodide';
