@@ -1,0 +1,31 @@
+# .github/workflows/docker-build-on-tag.yml
+name: Build & Push Docker Image on Tag
+
+on:
+  push:
+    tags:
+      - '*'                  # any tag push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & Push via one‐liner
+        run: |
+          TAG=${{ github.ref_name }} && \
+          IMAGE=ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:$TAG && \
+          docker build -t $IMAGE . && \
+          docker push $IMAGE && \
+          docker tag $IMAGE ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest && \
+          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
